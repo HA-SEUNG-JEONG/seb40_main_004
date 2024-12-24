@@ -8,6 +8,7 @@ import com.morakmorak.morak_back_end.exception.BusinessLogicException;
 import com.morakmorak.morak_back_end.exception.ErrorCode;
 import com.morakmorak.morak_back_end.repository.CommentRepository;
 import com.morakmorak.morak_back_end.repository.notification.NotificationRepository;
+import com.morakmorak.morak_back_end.service.answer_service.AnswerService;
 import com.morakmorak.morak_back_end.service.auth_user_service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,21 +36,21 @@ public class CommentService {
             Long articleId = targetId;
             Article verifiedArticle = articleService.findVerifiedArticle(articleId);
 
-            commentNotSaved.injectUser(verifiedUser).injectArticle(verifiedArticle);
+            commentNotSaved.injectTo(verifiedUser).injectTo(verifiedArticle);
             Comment savedComment = commentRepository.save(commentNotSaved);
 
             sendNotificationByComment(verifiedUser, savedComment);
-            verifiedUser.addPoint(savedComment, pointCalculator);
+            verifiedUser.plusPoint(savedComment, pointCalculator);
 
             return findAllCommentsBy(verifiedArticle);
         }
         Long answerId = targetId;
         Answer verifiedAnswer = answerService.findVerifiedAnswerById(answerId);
-        commentNotSaved.injectUser(verifiedUser).injectAnswer(verifiedAnswer);
+        commentNotSaved.injectTo(verifiedUser).injectTo(verifiedAnswer);
         Comment savedComment = commentRepository.save(commentNotSaved);
 
         sendNotificationByComment(verifiedUser, savedComment);
-        verifiedUser.addPoint(savedComment, pointCalculator);
+        verifiedUser.plusPoint(savedComment, pointCalculator);
 
         return findAllCommentsBy(verifiedAnswer);
 
@@ -64,13 +65,13 @@ public class CommentService {
             Long articleId = targetId;
             Article verifiedArticle = articleService.findVerifiedArticle(articleId);
             checkArticleStatus(verifiedArticle);
-            foundComment.updateContent(newContent);
+            foundComment.changeContent(newContent);
             return findAllCommentsBy(verifiedArticle);
         }
         Long answerId = targetId;
         Answer verifiedAnswer = answerService.findVerifiedAnswerById(answerId);
         checkArticleStatus(verifiedAnswer.getArticle());
-        foundComment.updateContent(newContent);
+        foundComment.changeContent(newContent);
         return findAllCommentsBy(verifiedAnswer);
     }
 

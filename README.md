@@ -2,12 +2,22 @@
 
 ![ 모락모락](https://user-images.githubusercontent.com/102589253/205538117-219ce4e9-068c-4e9f-a373-38ce000a50f1.png)
 
+## Version
+- 1.0.0 `배포`  
+- 1.1.0 `HTTPS 적용`  
+- 1.1.1 `게시글 조회시 중복조회 방지 기능 추가`
+- 1.2.0 `게시글 신고 기능 업데이트`
+- 1.2.1 `CICD 툴 GithubActions -> Jenkins로 변경`
+---
+
 🎇처음 개발을 시작했던 때를 기억하시나요?<br/>
 외계어 같은 코드와 읽어도 이해되지 않는 문서, 기나긴 에러코드까지… <br/>
 서툰 질문이 부끄럽고, 날선 답변이 두려우셨다면<br/>
 모락모락에서 함께해요!<br/>
 <br/>
+
 **배포링크** : [https://seb40-main-004.vercel.app](https://seb40-main-004.vercel.app/) [배포 중단]
+
 
 **깃허브** : [https://github.com/codestates-seb/seb40_main_004](https://github.com/codestates-seb/seb40_main_004)
 
@@ -205,6 +215,15 @@ https://huiyuns-organization.gitbook.io/morak-2-lab/bookmarks
 </table>
 <br/>
 프리 프로젝트를 진행하며 모락모락 팀은 프론트와 백엔드의 기능 구성 단위가 달라 협업 과정에 문제가 발생한다는 점을 인지했습니다. 특히 API의 요청, 응답 데이터를 구성하고 기능을 구현하는 과정에서 개발 일정에 차질이 생기거나, 소통 오류가 생기는 경우가 잦았습니다. 따라서 모락모락은 백엔드의 기능별 뷰, 프론트엔드의 페이지별 뷰를 반영한 API 소통공간을 마련해 각 담당자의 상호 구체적인 합의를 거쳐 기능을 완성해나갔습니다.
+
+### 커밋 컨벤션
+
+### 사용 기술 스택
+
+### Documentation
+- https://huiyuns-organization.gitbook.io/morak-2-lab/
+- 작성과정
+https://github.com/MorakMorak/morakmorak
 
 ## 🎇To Be CONTINUE...
 

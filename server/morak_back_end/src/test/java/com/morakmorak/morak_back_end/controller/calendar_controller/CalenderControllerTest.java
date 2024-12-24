@@ -6,6 +6,7 @@ import com.morakmorak.morak_back_end.controller.BookmarkController;
 import com.morakmorak.morak_back_end.controller.CalendarController;
 import com.morakmorak.morak_back_end.controller.ExceptionController;
 import com.morakmorak.morak_back_end.dto.JobInfoDto;
+import com.morakmorak.morak_back_end.exception.webHook.ErrorNotificationGenerator;
 import com.morakmorak.morak_back_end.security.util.JwtTokenUtil;
 import com.morakmorak.morak_back_end.service.CalendarService;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +52,8 @@ public class CalenderControllerTest {
 
     @MockBean
     JwtTokenUtil jwtTokenUtil;
-
+    @MockBean
+    ErrorNotificationGenerator errorNotificationGenerator;
     @BeforeEach
     public void init() {
         jwtTokenUtil = new JwtTokenUtil(ACCESS_TOKEN, REFRESH_TOKEN);
@@ -71,9 +73,9 @@ public class CalenderControllerTest {
                 .build();
 
         List<JobInfoDto> response = List.of(dto, dto);
-        BDDMockito.given(calendarService.findCalendarData()).willReturn(response);
+        BDDMockito.given(calendarService.findCalendarData(Date.valueOf("9999-12-31"))).willReturn(response);
         //when
-        ResultActions perform = mockMvc.perform(get("/calendars"));
+        ResultActions perform = mockMvc.perform(get("/calendars/9999-12-31"));
 
         //then
         perform.andExpect(status().isOk())

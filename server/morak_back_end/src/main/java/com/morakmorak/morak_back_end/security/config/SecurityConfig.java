@@ -5,7 +5,6 @@ import com.morakmorak.morak_back_end.security.oauth.CustomOauth2Service;
 import com.morakmorak.morak_back_end.security.oauth.CustomSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -47,8 +46,9 @@ public class SecurityConfig {
                 .mvcMatchers("/auth/**").permitAll()
                 .mvcMatchers("/login/**").permitAll()
                 .mvcMatchers("/oauth/**").permitAll()
+                .mvcMatchers("/cra/**").permitAll()
                 .mvcMatchers(GET, "/users/**").permitAll()
-                .mvcMatchers(GET, "/calendars").permitAll()
+                .mvcMatchers(GET, "/calendars/**").permitAll()
                 .mvcMatchers("/test/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                 .mvcMatchers("/test/manager/**").hasAnyRole("MANAGER", "ADMIN")
                 .mvcMatchers("/test/admin/**").hasAnyRole("ADMIN")
@@ -71,6 +71,7 @@ public class SecurityConfig {
                 .mvcMatchers(POST,"/answers/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                 .mvcMatchers(PATCH,"/answers/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                 .mvcMatchers(PUT,"/answers/**").hasAnyRole("USER", "MANAGER", "ADMIN")
+                .mvcMatchers(DELETE,"/answers/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                 .anyRequest().denyAll()
                 .and()
                 .exceptionHandling()
@@ -90,9 +91,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:3000/");
-        config.addAllowedOrigin("http://seb40-main-004-hyeonwooga.vercel.app/");
-        config.addAllowedOrigin("https://seb40-main-004-hyeonwooga.vercel.app/");
-        config.addAllowedOrigin("https://seb40-main-004.vercel.app/");
+        config.addAllowedOrigin("https://morakmorak.vercel.app/");
         config.addAllowedHeader("*");
         config.setAllowedMethods(List.of("GET", "POST", "DELETE", "PATCH", "PUT", "OPTION"));
         source.registerCorsConfiguration("/**", config);

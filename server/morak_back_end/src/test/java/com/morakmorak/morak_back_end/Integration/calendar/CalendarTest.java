@@ -1,9 +1,7 @@
 package com.morakmorak.morak_back_end.Integration.calendar;
 
-import com.morakmorak.morak_back_end.dto.JobInfoDto;
 import com.morakmorak.morak_back_end.entity.Job;
 import com.morakmorak.morak_back_end.repository.JobQueryRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -32,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "jwt.refreshKey=only_test_refresh_key_value_gn..rlfdlrkqnwhrgkekspdy"
 })
 @AutoConfigureMockMvc
-@EnabledIfEnvironmentVariable(named = "REDIS", matches = "redis")
+
 public class CalendarTest {
     @Autowired
     MockMvc mockMvc;
@@ -44,13 +42,15 @@ public class CalendarTest {
     JobQueryRepository jobQueryRepository;
 
     @Test
-    @DisplayName("startDate가 지난 달, 이번 달, 다음 달, 다다음달의 데이터를 오름차순으로 조회한다.")
+    @DisplayName("startDate가 이번 달인 데이터만 오름차순으로 조회한다.")
     void findJobData1() throws Exception {
         //given
-        Date now = Date.valueOf(LocalDate.now());
         Date nextMonth = Date.valueOf(LocalDate.now().plusMonths(1));
         Date nextMonth2 = Date.valueOf(LocalDate.now().plusMonths(2));
         Date prevMonth = Date.valueOf(LocalDate.now().minusMonths(1));
+        Date firstDaysOfThisMonth = Date.valueOf(LocalDate.now().withDayOfMonth(1));
+        Date secondDaysOfThisMonth = Date.valueOf(LocalDate.now().withDayOfMonth(2));
+        Date thirdDaysOfThisMonth = Date.valueOf(LocalDate.now().withDayOfMonth(3));
 
         Job job1 = Job.builder().name(NAME1 + 1)
                 .state("시작")
@@ -66,11 +66,11 @@ public class CalendarTest {
                 .endDate(Date.valueOf("9999-12-31"))
                 .careerRequirement("경력")
                 .url(TISTORY_URL)
-                .startDate(now)
+                .startDate(firstDaysOfThisMonth)
                 .endDate(Date.valueOf("9999-12-31"))
                 .build();
 
-        Job job4 = Job.builder().name(NAME1 + 3)
+        Job job3 = Job.builder().name(NAME1 + 3)
                 .state("시작")
                 .endDate(Date.valueOf("9999-12-31"))
                 .careerRequirement("경력")
@@ -78,7 +78,7 @@ public class CalendarTest {
                 .startDate(nextMonth)
                 .build();
 
-        Job job3 = Job.builder().name(NAME1 + 4)
+        Job job4 = Job.builder().name(NAME1 + 4)
                 .state("시작")
                 .endDate(Date.valueOf("9999-12-31"))
                 .careerRequirement("경력")
@@ -86,21 +86,39 @@ public class CalendarTest {
                 .startDate(nextMonth2)
                 .build();
 
+        Job job5 = Job.builder().name(NAME1 + 5)
+                .state("시작")
+                .endDate(Date.valueOf("9999-12-31"))
+                .careerRequirement("경력")
+                .url(TISTORY_URL)
+                .startDate(secondDaysOfThisMonth)
+                .build();
+
+        Job job6 = Job.builder().name(NAME1 + 6)
+                .state("시작")
+                .endDate(Date.valueOf("9999-12-31"))
+                .careerRequirement("경력")
+                .url(TISTORY_URL)
+                .startDate(thirdDaysOfThisMonth)
+                .build();
+
         entityManager.persist(job1);
         entityManager.persist(job2);
         entityManager.persist(job3);
         entityManager.persist(job4);
+        entityManager.persist(job5);
+        entityManager.persist(job6);
 
         //when
-        ResultActions perform = mockMvc.perform(get("/calendars")
+        String date = LocalDate.now().toString();
+        ResultActions perform = mockMvc.perform(get("/calendars/{date}", date)
                 .header("User-Agent", "Mozilla 5.0"));
 
         //then
         perform.andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name", is(NAME1+1)))
-                .andExpect(jsonPath("$[1].name", is(NAME1+2)))
-                .andExpect(jsonPath("$[2].name", is(NAME1+3)))
-                .andExpect(jsonPath("$[3].name", is(NAME1+4)));
+                .andExpect(jsonPath("$[0].startDate", is(firstDaysOfThisMonth.toString())))
+                .andExpect(jsonPath("$[1].startDate", is(secondDaysOfThisMonth.toString())))
+                .andExpect(jsonPath("$[2].startDate", is(thirdDaysOfThisMonth.toString())));
     }
 
     @Test
@@ -132,7 +150,8 @@ public class CalendarTest {
         entityManager.persist(job2);
 
         //when
-        ResultActions perform = mockMvc.perform(get("/calendars")
+        String date = LocalDate.now().toString();
+        ResultActions perform = mockMvc.perform(get("/calendars/{date}", date)
                 .header("User-Agent", "Mozilla 5.0"));
 
         //then

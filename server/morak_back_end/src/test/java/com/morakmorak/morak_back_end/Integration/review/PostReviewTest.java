@@ -11,9 +11,10 @@ import com.morakmorak.morak_back_end.entity.enums.BadgeName;
 import com.morakmorak.morak_back_end.entity.enums.CategoryName;
 import com.morakmorak.morak_back_end.entity.enums.TagName;
 import com.morakmorak.morak_back_end.exception.BusinessLogicException;
+import com.morakmorak.morak_back_end.exception.webHook.ErrorNotificationGenerator;
 import com.morakmorak.morak_back_end.repository.user.UserRepository;
 import com.morakmorak.morak_back_end.security.util.JwtTokenUtil;
-import com.morakmorak.morak_back_end.service.AnswerService;
+import com.morakmorak.morak_back_end.service.answer_service.AnswerService;
 import com.morakmorak.morak_back_end.service.ArticleService;
 import com.morakmorak.morak_back_end.service.NotificationService;
 import com.morakmorak.morak_back_end.service.ReviewService;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -47,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "jwt.refreshKey=only_test_refresh_key_value_gn..rlfdlrkqnwhrgkekspdy"
 })
 @AutoConfigureMockMvc
-@EnabledIfEnvironmentVariable(named = "REDIS", matches = "redis")
+
 public class PostReviewTest {
     @Autowired
     JwtTokenUtil jwtTokenUtil;
@@ -78,6 +80,8 @@ public class PostReviewTest {
 
     @Autowired
     UserRepository userRepository;
+    @MockBean
+    ErrorNotificationGenerator errorNotificationGenerator;
 
     String accessToken;
     User user;
@@ -185,7 +189,7 @@ public class PostReviewTest {
     @DisplayName("정상적인 요청 시 created 반환되며, 포인트의 경우 sender는 차감, receiver는 증가된다.")
     void donatePoint_success_1() throws Exception {
         //user에게 50포인트 존재
-        user.addPoint(Answer.builder().build(), pointCalculator);
+        user.plusPoint(Answer.builder().build(), pointCalculator);
         Integer user_InitialPoint = user.getPoint();
         Integer user1_InitialPoint = user1.getPoint();
         ReviewDto.RequestPostReview request = ReviewDto.RequestPostReview.builder().content("15글자 이상의 정성스러운 답변").badges(validBadges).point(Optional.of(10)).build();

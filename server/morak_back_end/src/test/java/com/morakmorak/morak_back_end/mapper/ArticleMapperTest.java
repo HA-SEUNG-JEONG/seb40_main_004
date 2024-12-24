@@ -7,7 +7,6 @@ import com.morakmorak.morak_back_end.entity.enums.Grade;
 import com.morakmorak.morak_back_end.entity.enums.ReportReason;
 import com.morakmorak.morak_back_end.entity.enums.TagName;
 import com.morakmorak.morak_back_end.repository.article.ArticleRepository;
-import com.morakmorak.morak_back_end.util.ArticleTestConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-@EnabledIfEnvironmentVariable(named = "REDIS", matches = "redis")
+
 class ArticleMapperTest {
     @Autowired
     ArticleRepository articleRepository;
@@ -85,7 +84,7 @@ class ArticleMapperTest {
                 .user(user)
                 .build();
         info.getArticleList().add(article);
-        articleTagJava.injectMappingForArticleAndTag(article);
+        articleTagJava.injectTo(article);
         em.persist(article);
 
     }

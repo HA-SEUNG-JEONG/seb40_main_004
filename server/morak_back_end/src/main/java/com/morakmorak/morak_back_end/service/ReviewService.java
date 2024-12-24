@@ -9,6 +9,7 @@ import com.morakmorak.morak_back_end.exception.ErrorCode;
 import com.morakmorak.morak_back_end.repository.BadgeRepository;
 import com.morakmorak.morak_back_end.repository.ReviewRepository;
 import com.morakmorak.morak_back_end.repository.notification.NotificationRepository;
+import com.morakmorak.morak_back_end.service.answer_service.AnswerService;
 import com.morakmorak.morak_back_end.service.auth_user_service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,6 @@ public class ReviewService {
 
         Answer verifiedAnswer = answerService.findVerifiedAnswerById(answerId);
 
-        User articleAuthor = verifiedArticle.getUser();
         User receiver = verifiedAnswer.getUser();
 
         checkRequestUserIsAuthor(verifiedArticle, verifiedRequestUser);
@@ -49,8 +49,8 @@ public class ReviewService {
 
             injectBadgesOnReview(reviewWithoutBadges, badgeDtoList);
             donatePoint(verifiedRequestUser, receiver, reviewWithoutBadges.getPoint());
-            reviewWithoutBadges.mapAnswer(verifiedAnswer).mapArticle(verifiedArticle).changeAnswerArticleStatus();
-            Review reviewNotSaved = reviewWithoutBadges.addSender(verifiedRequestUser).addReciever(receiver);
+            reviewWithoutBadges.injectTo(verifiedAnswer).injectTo(verifiedArticle).changeAnswerArticleStatus();
+            Review reviewNotSaved = reviewWithoutBadges.addSender(verifiedRequestUser).addReceiver(receiver);
 
             NotificationGenerator generator = NotificationGenerator.of(reviewNotSaved);
             Notification notification = generator.generateNotification();
@@ -67,7 +67,7 @@ public class ReviewService {
         checkRemainingPoints(verifiedSender, reviewWithoutBadges.getPoint());
         donatePoint(verifiedSender, verifiedReceiver, reviewWithoutBadges.getPoint());;
 
-        Review reviewNotSaved = reviewWithoutBadges.addSender(verifiedSender).addReciever(verifiedReceiver);
+        Review reviewNotSaved = reviewWithoutBadges.addSender(verifiedSender).addReceiver(verifiedReceiver);
         injectBadgesOnReview(reviewNotSaved, badgeDtoList);
 
         NotificationGenerator generator = NotificationGenerator.of(reviewNotSaved);

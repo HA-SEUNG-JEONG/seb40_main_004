@@ -3,11 +3,8 @@ package com.morakmorak.morak_back_end.repository.user_repository;
 import com.morakmorak.morak_back_end.config.JpaQueryFactoryConfig;
 import com.morakmorak.morak_back_end.dto.ActivityDto;
 import com.morakmorak.morak_back_end.dto.TagQueryDto;
-import com.morakmorak.morak_back_end.dto.UserDto;
 import com.morakmorak.morak_back_end.entity.*;
 import com.morakmorak.morak_back_end.entity.enums.*;
-import com.morakmorak.morak_back_end.repository.*;
-import com.morakmorak.morak_back_end.repository.article.ArticleRepository;
 import com.morakmorak.morak_back_end.repository.user.UserQueryRepository;
 import com.morakmorak.morak_back_end.repository.user.UserRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -29,7 +26,6 @@ import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -48,7 +44,7 @@ import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTest
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = NONE)
 @Import(JpaQueryFactoryConfig.class)
-@EnabledIfEnvironmentVariable(named = "REDIS", matches = "redis")
+
 public class UserRepositoryTest {
     @Autowired
     UserRepository userRepository;
@@ -101,14 +97,14 @@ public class UserRepositoryTest {
         Article article_user1 = Article.builder().user(user).build();
         Article article_user2 = Article.builder().user(user).build();
 
-        article_user1.injectUserForMapping(user);
-        article_user2.injectUserForMapping(user);
+        article_user1.injectTo(user);
+        article_user2.injectTo(user);
 
         Article article_other1 = Article.builder().user(other).build();
-        article_other1.injectUserForMapping(other);
+        article_other1.injectTo(other);
 
         Answer answer_other1 = Answer.builder().user(other).article(article_user1).build();
-        answer_other1.injectUser(other);
+        answer_other1.injectTo(other);
 
         ArticleLike articleLike1 = ArticleLike.builder().article(article_user1).user(other).build();
         ArticleLike articleLike2 = ArticleLike.builder().article(article_user1).user(other).build();
@@ -187,18 +183,18 @@ public class UserRepositoryTest {
         User user = User.builder().build();
         entityManager.persist(user);
 
-        BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.of(2022,1,6,0,0,0)));
+        BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.of(LocalDate.now().getYear(),1,6,0,0,0)));
 
         for (int i=0; i<10; i++) {
             Article article = Article.builder().user(user).build();
-            article.injectUserForMapping(user);
+            article.injectTo(user);
             entityManager.persist(article);
         }
 
         for (int i=1; i<=5; i++) {
-            BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.of(2022,1,i,0,0,0)));
+            BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.of(LocalDate.now().getYear(),1,i,0,0,0)));
             Article article = Article.builder().user(user).build();
-            article.injectUserForMapping(user);
+            article.injectTo(user);
             entityManager.persist(article);
         }
         // when
@@ -220,24 +216,23 @@ public class UserRepositoryTest {
         // given
         User user = User.builder().build();
         entityManager.persist(user);
-
-        BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.of(2022,1,6,0,0,0)));
+        BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.of(LocalDate.now().getYear(),1,6,0,0,0)));
 
         for (int i=0; i<10; i++) {
             Article article = Article.builder().user(user).build();
             Answer answer = Answer.builder().article(article).user(user).build();
-            article.injectUserForMapping(user);
-            answer.injectUser(user);
+            article.injectTo(user);
+            answer.injectTo(user);
             entityManager.persist(article);
             entityManager.persist(answer);
         }
 
         for (int i=1; i<=5; i++) {
-            BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.of(2022,1,i,0,0,0)));
+            BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.of(LocalDate.now().getYear(),1,i,0,0,0)));
             Article article = Article.builder().user(user).build();
             Answer answer = Answer.builder().article(article).user(user).build();
-            article.injectUserForMapping(user);
-            answer.injectUser(user);
+            article.injectTo(user);
+            answer.injectTo(user);
             entityManager.persist(article);
             entityManager.persist(answer);
         }
@@ -261,22 +256,22 @@ public class UserRepositoryTest {
         User user = User.builder().build();
         entityManager.persist(user);
 
-        BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.of(2022,1,6,0,0,0)));
+        BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.of(LocalDate.now().getYear(),1,6,0,0,0)));
 
         for (int i=0; i<10; i++) {
             Article article = Article.builder().user(user).build();
             Comment comment = Comment.builder().article(article).user(user).build();
-            article.injectUserForMapping(user);
-            comment.injectUser(user);
+            article.injectTo(user);
+            comment.injectTo(user);
             entityManager.persist(article);
             entityManager.persist(comment);
         }
 
         for (int i=1; i<=5; i++) {
-            BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.of(2022,1,i,0,0,0)));
+            BDDMockito.given(dateTimeProvider.getNow()).willReturn(Optional.of(LocalDateTime.of(LocalDate.now().getYear(),1,i,0,0,0)));
             Article article = Article.builder().user(user).build();
             Comment comment = Comment.builder().article(article).user(user).build();
-            article.injectUserForMapping(user);
+            article.injectTo(user);
             entityManager.persist(article);
             entityManager.persist(comment);
         }
@@ -306,10 +301,10 @@ public class UserRepositoryTest {
             Comment comment1 = Comment.builder().article(article).build();
             Comment comment2 = Comment.builder().article(article).build();
             ArticleLike articleLike = ArticleLike.builder().article(article).user(other).build();
-            article.injectUserForMapping(user);
+            article.injectTo(user);
             articleLike.mapUserAndArticleWithLike();;
-            comment1.injectArticle(article);
-            comment2.injectArticle(article);
+            comment1.injectTo(article);
+            comment2.injectTo(article);
 
             entityManager.persist(article);
             entityManager.persist(articleLike);
@@ -341,8 +336,8 @@ public class UserRepositoryTest {
             Comment comment1 = Comment.builder().article(article).build();
             Comment comment2 = Comment.builder().article(article).build();
             ArticleLike articleLike = ArticleLike.builder().article(article).user(other).build();
-            article.injectUserForMapping(other);
-            answer.injectUser(user);
+            article.injectTo(other);
+            answer.injectTo(user);
             articleLike.mapUserAndArticleWithLike();;
 
             entityManager.persist(article);
@@ -377,8 +372,8 @@ public class UserRepositoryTest {
             Comment comment2 = Comment.builder().user(user).content(CONTENT2).article(article).build();
             ArticleLike articleLike = ArticleLike.builder().article(article).user(other).build();
             articleLike.mapUserAndArticleWithLike();;
-            comment1.injectArticle(article);
-            comment2.injectArticle(article);
+            comment1.injectTo(article);
+            comment2.injectTo(article);
 
             entityManager.persist(article);
             entityManager.persist(articleLike);
